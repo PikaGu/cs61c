@@ -65,14 +65,127 @@ int main(int argc, char **argv) {
 }
 #endif /* _PHILPHIX_UNITTEST */
 
+int isValid(char c) {
+  return c != ' ' && c != '\t' && c != '\n';
+}
+
+char* readWord(FILE* dict) {
+  int cap = 64;
+  int cur = 0;
+
+  char c;
+  char* str = (char *) malloc(sizeof(char) * cap);
+  while ((c = fgetc(dict)) != EOF) {
+    if (isValid(c)) {
+      str[cur++] = c;
+      if (cur >= cap) {
+        cap *= 2;
+        str = realloc(str, sizeof(char) * cap);
+      }
+    } else {
+      if (!cur) {
+        continue;
+      }
+      break;
+    }
+  }
+
+  str[cur] = '\0';
+  return str;
+}
+
 /* Task 3 */
 void readDictionary(char *dictName) {
   // -- TODO --
-  fprintf(stderr, "You need to implement readDictionary\n");
+  // fprintf(stderr, "You need to implement readDictionary\n");
+  FILE* dict = fopen(dictName, "r");
+  if (dict == NULL) {
+    fprintf(stderr, "failed to open dict file.\n");
+    exit(61);
+  }
+
+  while (1) {
+    char* key = readWord(dict);
+    if (key[0] == '\0') {
+      break;
+    }
+    char* data = readWord(dict);
+    insertData(dictionary, key, data);
+  }
+
+  fclose(dict);
+}
+
+char* toLowerWord(char* word, int index) {
+  int cur = 0;
+  int cap = 64;
+  char* str = (char *) malloc(sizeof(char) * cap);
+  while (word[cur] != '\0') {
+    str[cur] = word[cur];
+    if (cur >= index && isupper(str[cur])) {
+      str[cur] = tolower(str[cur]);
+    }
+    cur++;
+    if (cur >= cap) {
+      cap *= 2;
+      str = realloc(str, sizeof(char) * cap);
+    }
+  }
+  str[cur] = '\0';
+  return str;
+}
+
+char* replaceWord(char* word) {
+  char* data;
+  if ((data = findData(dictionary, word)) != NULL) {
+    return data;
+  }
+
+  char* lower = toLowerWord(word, 1);
+  if ((data = findData(dictionary, lower)) != NULL) {
+    return data;
+  }
+
+  lower = toLowerWord(word, 0);
+  if ((data = findData(dictionary, lower)) != NULL) {
+    return data;
+  }
+
+  return word;
 }
 
 /* Task 4 */
 void processInput() {
   // -- TODO --
-  fprintf(stderr, "You need to implement processInput\n");
+  // fprintf(stderr, "You need to implement processInput\n");
+
+  int cap = 64;
+  int cur = 0;
+
+  char c;
+  char* str = (char *) malloc(sizeof(char) * cap);
+  while ((c = fgetc(stdin)) != EOF) {
+    if (isalpha(c) || isdigit(c)) {
+      str[cur++] = c;
+      if (cur >= cap) {
+        cap *= 2;
+        str = realloc(str, sizeof(char) * cap);
+      }
+    } else {
+      if (!cur) {
+        fputc(c, stdout);
+        continue;
+      }
+      str[cur] = '\0';
+      char* data = replaceWord(str);
+      fputs(data, stdout);
+      fputc(c, stdout);
+      cur = 0;
+    }
+  }
+  if (cur) {
+    str[cur] = '\0';
+    char* data = replaceWord(str);
+    fputs(data, stdout);
+  }
 }
