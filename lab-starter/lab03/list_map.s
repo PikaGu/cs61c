@@ -57,6 +57,7 @@ map:
     sw s0, 4(sp)
     sw s1, 8(sp)
 
+map_recurse:
     beq a0, x0, done # If we were given a null pointer (address 0), we're done.
 
     add s0, a0, x0 # Save address of this node in s0
@@ -93,11 +94,7 @@ map:
 
     # Recurse
     ### YOUR CODE HERE ###
-    lw ra, 0(sp)
-    lw s0, 4(sp)
-    lw s1, 8(sp)
-    addi sp, sp, 12
-    jal x0, map
+    jal x0, map_recurse
 
 done:
     # Epilogue: Restore register values and free space from the stack

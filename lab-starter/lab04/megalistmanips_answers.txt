@@ -1,6 +1,6 @@
-1.
-2.
-3.
-4.
-5.
-6.
+1. get node.arr, not the node object
+2. add the offset(int * 4) when access arr
+3. use t1 register but have function call
+4. also, add 4 for t0 after ssli
+5. move s1 to a1, not one word
+6. recurse map label & not set ra
