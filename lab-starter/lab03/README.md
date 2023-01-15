@@ -1,9 +1,5 @@
 ## Note
 
-```
-java -jar tools/venus.jar . -dm
-```
-
 
 * `srli`和`srai`的区别 - 符号位
 
